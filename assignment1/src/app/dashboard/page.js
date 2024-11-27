@@ -129,6 +129,20 @@ export default function Page() {
                             {item.image}
                             <br></br>
                             <Button variant="outlined"> Add to cart </Button>
+
+                            <br></br>
+                            <br></br>
+                            Description:
+                            <br></br>
+                            {item.pname}
+                            <br></br>
+                            <br></br>
+                            Price: €
+                            {item.price}
+                            <br></br>
+                            {item.image}
+                            <br></br>
+                            <Button variant="outlined"> Add to cart </Button>
                         </div>
                     ))
                 }
