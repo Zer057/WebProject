@@ -7,7 +7,7 @@ export async function GET(req, res) {
     const url = 'mongodb+srv://RichWebUser:rich123@richweb.r8imr.mongodb.net/?retryWrites=true&w=majority&appName=RichWeb'; 
     
     const client = new MongoClient(url);
-    const dbName = 'app'; // database name
+    const dbName = 'Krispy_Kreme'; // database name
     await client.connect();
     console.log('Connected successfully to server');
     const db = client.db(dbName);

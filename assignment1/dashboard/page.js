@@ -13,6 +13,7 @@ import Link from '@mui/material/Link';
 
 export default function DashboardNavBar() {
   const [data, setData] = useState(null);
+  const [cart, setCart] = useState([]); // Cart state to store selected products
 
   useEffect(() => {
     fetch('http://localhost:3000/api/getProducts')
@@ -24,7 +25,10 @@ export default function DashboardNavBar() {
       .catch((err) => console.error('Error fetching products:', err));
   }, []);
 
-  
+  const addToCart = (product) => {
+    setCart([...cart, product]);
+    alert(`${product.pname} added to cart!`); // Alert user when item is added
+  };
 
   if (!data) return <p>Loading...</p>;
 
@@ -60,19 +64,32 @@ export default function DashboardNavBar() {
         </Toolbar>
       </AppBar>
 
-      
-
       {/* Product List */}
-      <Container component="main" maxWidth="xs">
-        <Typography variant="h4" sx={{ mt: 2, mb: 2 }}>
+      <Container component="main" maxWidth="lg" sx={{ mt: 4 }}>
+        <Typography variant="h4" sx={{ mb: 4 }}>
           Products
         </Typography>
-        <div>
+        <Box
+          sx={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 2, // Spacing between items
+            justifyContent: 'center', // Center items horizontally
+          }}
+        >
           {data.map((item, i) => (
-            <Box key={i} sx={{ padding: '20px', border: '1px solid #ddd', marginBottom: '10px', borderRadius: '8px' }}>
-              <Typography variant="h6">Description:</Typography>
-              <Typography>{item.pname}</Typography>
-              <Typography variant="h6" sx={{ mt: 2 }}>
+            <Box
+              key={i}
+              sx={{
+                padding: '20px',
+                border: '1px solid #ddd',
+                borderRadius: '8px',
+                width: '300px', // Set a fixed width for each card
+                textAlign: 'center',
+              }}
+            >
+              <Typography variant="h6">{item.pname}</Typography>
+              <Typography variant="h6" sx={{ mt: 1 }}>
                 Price: €{item.price}
               </Typography>
               {item.image && (
@@ -80,15 +97,32 @@ export default function DashboardNavBar() {
                   component="img"
                   src={item.image}
                   alt={item.pname}
-                  sx={{ width: '100%', height: 'auto', marginTop: '10px' }}
+                  sx={{
+                    width: '100%',
+                    height: '200px',
+                    objectFit: 'cover',
+                    marginTop: '10px',
+                    borderRadius: '8px',
+                  }}
                 />
               )}
-              <Button variant="outlined" sx={{ mt: 2 }}>
+              <Button
+                variant="outlined"
+                sx={{ mt: 2 }}
+                onClick={() => addToCart(item)} // Add to cart functionality
+              >
                 Add to cart
               </Button>
             </Box>
           ))}
-        </div>
+        </Box>
+
+        {/* Cart Info */}
+        <Box sx={{ mt: 4, textAlign: 'center' }}>
+          <Button variant="outlined" color="primary" onClick={() => alert(`Items in Cart: ${cart.length}`)}>
+            View Cart ({cart.length} items)
+          </Button>
+        </Box>
       </Container>
     </Box>
   );
