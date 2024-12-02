@@ -9,44 +9,46 @@ import Link from '@mui/material/Link';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-
-//import ResponsiveAppBar from './components/NavBar/ResponsiveAppBar';
+import Typography from '@mui/material/Typography';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
-  const handleSubmit = (event) => {
-    console.log('Handling submit');
+  const router = useRouter();
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
     const email = data.get('email');
     const pass = data.get('password');
-    const tel = data.get('tel');
-    const address = data.get('address');
 
-    console.log('Sent email:', email);
-    console.log('Sent password:', pass);
-    console.log('Sent telephone:', tel);
-    console.log('Sent address:', address);
+    console.log('Attempting to log in with email:', email);
 
-    runDBCallAsync(
-      `http://localhost:3000/api/register?tel=${tel}&email=${email}&pass=${pass}&address=${address}`
-    );
-  };
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, pass }),
+    });
 
-  async function runDBCallAsync(url) {
-    const res = await fetch(url);
-    const data = await res.json();
-    if (data.data === 'valid') {
-      console.log('Registration is valid!');
+    const responseData = await res.json();
+
+    if (res.status === 200 && responseData.success) {
+      console.log('Login successful. Redirecting...');
+      router.push('/products'); // Redirect to the products page
     } else {
-      console.log('Registration failed.');
+      console.log('Login failed:', responseData.message);
+      alert('Invalid credentials. Please try again.');
     }
-  }
+  };
 
   return (
     <Container maxWidth="sm">
-      
-      <Box sx={{ height: '100vh' }}>
+      <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+        <Typography variant="h4" gutterBottom>
+          Login
+        </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
             margin="normal"
@@ -68,36 +70,17 @@ export default function Home() {
             type="password"
             autoComplete="current-password"
           />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="address"
-            label="Address"
-            name="address"
-            autoComplete="address"
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="tel"
-            label="Telephone Number"
-            name="tel"
-            type="tel"
-            autoComplete="tel"
-          />
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
           />
           <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-            Register
+            Log In
           </Button>
           <Grid container justifyContent="flex-end">
             <Grid item>
               <Link href="/register" variant="body2">
-                {"Already have an account? Log in"}
+                {"Don't have an account? Register"}
               </Link>
             </Grid>
           </Grid>
